@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.env
+*.env.local
+.DS_Store
+
+# Expo
+apps/mobile/.expo/
+apps/mobile/android/
+apps/mobile/ios/
+
+# Prisma
+backend/prisma/migrations/.cache
+CLAUDE.md
+PROGRESS.md

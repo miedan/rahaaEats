@@ -1,0 +1,15 @@
+{
+  "name": "rahaa",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "backend",
+    "shared"
+  ],
+  "scripts": {
+    "backend": "yarn workspace backend dev",
+    "backend:build": "yarn workspace backend build",
+    "backend:migrate": "yarn workspace backend migrate"
+  }
+}
