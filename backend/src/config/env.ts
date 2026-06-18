@@ -18,5 +18,6 @@ export const ENV = {
   AT_API_KEY: process.env.AT_API_KEY ?? '',
   AT_USERNAME: process.env.AT_USERNAME ?? '',
   AT_SENDER_ID: process.env.AT_SENDER_ID ?? '',
+  GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY ?? '',
   FRONTEND_URL: process.env.FRONTEND_URL ?? 'http://localhost:8081',
 };

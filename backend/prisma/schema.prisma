@@ -108,8 +108,15 @@ model Address {
   label                String
   lat                  Float
   lng                  Float
+  formattedAddress     String?
   buildingType         String?
-  unitNumber           String?
+  // House fields
+  houseNumber          String?
+  // Apartment / Office / Other fields
+  apartmentName        String?
+  buildingNumber       String?
+  floorNumber          String?
+  doorNumber           String?
   district             String
   districtPin          String?
   deliveryInstructions String?
