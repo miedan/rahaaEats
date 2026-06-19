@@ -19,6 +19,16 @@ export type DiscountType = 'PERCENT' | 'FIXED';
 
 export type MomoProvider = 'MTN' | 'AIRTEL';
 
+export type FoodCategory =
+  | 'BURGER'
+  | 'BEEF'
+  | 'DESSERT'
+  | 'JUICE'
+  | 'NOODLES'
+  | 'PIZZA'
+  | 'SALAD'
+  | 'OTHER';
+
 export interface User {
   id: string;
   phoneNumber: string;
@@ -83,12 +93,41 @@ export interface MenuItem {
   restaurantId: string;
   name: string;
   description: string | null;
+  category: FoodCategory;
   priceRwf: number;
   photoUrl: string | null;
   isAvailable: boolean;
   prepTimeMins: number | null;
   ingredients: string | null;
   allergens: string | null;
+  avgRating: number;
+}
+
+export interface FoodSearchResult {
+  id: string;
+  name: string;
+  photoUrl: string | null;
+  priceRwf: number;
+  category: FoodCategory;
+  avgRating: number;
+  restaurantId: string;
+  restaurantName: string;
+}
+
+export interface RestaurantSearchResult {
+  id: string;
+  businessName: string;
+  coverPhotoUrl: string | null;
+  logoUrl: string | null;
+  isOpen: boolean;
+  avgRating: number;
+  distanceM?: number;
+  etaMins?: number;
+}
+
+export interface SearchResponse {
+  foods: FoodSearchResult[];
+  restaurants: RestaurantSearchResult[];
 }
 
 export interface Order {

@@ -5,6 +5,8 @@ import authRoutes from './routes/auth.routes';
 import profileRoutes from './routes/profile.routes';
 import addressRoutes from './routes/address.routes';
 import placesRoutes from './routes/places.routes';
+import restaurantRoutes from './routes/restaurant.routes';
+import searchRoutes from './routes/search.routes';
 
 const app = express();
 
@@ -20,6 +22,8 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/profile', profileRoutes);
 app.use('/api/v1/addresses', addressRoutes);
 app.use('/api/v1/places', placesRoutes);
+app.use('/api/v1/restaurants', restaurantRoutes);
+app.use('/api/v1/search', searchRoutes);
 
 app.use((_req, res) => {
   res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Route not found' } });

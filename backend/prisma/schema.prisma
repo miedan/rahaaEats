@@ -54,6 +54,17 @@ enum OtpPurpose {
   PASSWORD_RESET
 }
 
+enum FoodCategory {
+  BURGER
+  BEEF
+  DESSERT
+  JUICE
+  NOODLES
+  PIZZA
+  SALAD
+  OTHER
+}
+
 model User {
   id              String    @id @default(uuid())
   phoneNumber     String    @unique
@@ -155,6 +166,8 @@ model Restaurant {
   menuItems        MenuItem[]
   orders           Order[]
   ratings          RestaurantRating[]
+
+  @@index([isApproved, isOpen])
 }
 
 model RestaurantHours {
@@ -184,12 +197,14 @@ model MenuItem {
   restaurantId String
   name         String
   description  String?
+  category     FoodCategory @default(OTHER)
   priceRwf     Int
   photoUrl     String?
   isAvailable  Boolean    @default(true)
   prepTimeMins Int?
   ingredients  String?
   allergens    String?
+  avgRating    Float      @default(0)
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
@@ -197,6 +212,8 @@ model MenuItem {
   restaurant   Restaurant  @relation(fields: [restaurantId], references: [id])
   orderItems   OrderItem[]
   foodRatings  FoodRating[]
+
+  @@index([category])
 }
 
 model Order {
