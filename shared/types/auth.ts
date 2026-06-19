@@ -18,19 +18,23 @@ export interface AuthTokens {
   refreshToken: string;
 }
 
+export interface AuthUserSummary {
+  id: string;
+  phoneNumber: string;
+  fullName: string | null;
+  role: string;
+}
+
 export interface LoginRequest {
   phoneNumber: string;
   password: string;
 }
 
 export interface LoginResponse extends AuthTokens {
-  user: {
-    id: string;
-    phoneNumber: string;
-    fullName: string | null;
-    role: string;
-  };
+  user: AuthUserSummary;
 }
+
+export type VerifyOtpResponse = LoginResponse;
 
 export interface ForgotPasswordRequest {
   phoneNumber: string;
@@ -46,6 +50,9 @@ export interface RefreshTokenRequest {
   refreshToken: string;
 }
 
+export type OtpPurpose = 'REGISTRATION' | 'PASSWORD_RESET';
+
 export interface ResendOtpRequest {
   phoneNumber: string;
+  purpose: OtpPurpose;
 }
