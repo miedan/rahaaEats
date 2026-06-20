@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS } from '../constants/colors';
 
 interface Props {
@@ -10,10 +11,17 @@ interface Props {
 }
 
 export function BackHeader({ title, onBack, rightAction }: Props) {
+  const insets = useSafeAreaInsets();
+
   return (
-    <View style={styles.row}>
-      <Pressable onPress={onBack ?? router.back} hitSlop={8} style={styles.side}>
+    <View style={[styles.row, { marginTop: insets.top + 8 }]}>
+      <Pressable
+        onPress={onBack ?? router.back}
+        hitSlop={8}
+        style={[styles.side, styles.backButton]}
+      >
         <Ionicons name="chevron-back" size={24} color={COLORS.textPrimary} />
+        <Text style={styles.backLabel}>Back</Text>
       </Pressable>
       <Text style={styles.title} numberOfLines={1}>
         {title}
@@ -39,6 +47,15 @@ const styles = StyleSheet.create({
   side: {
     minWidth: 32,
     alignItems: 'flex-start',
+  },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  backLabel: {
+    fontSize: 16,
+    color: COLORS.textPrimary,
+    marginLeft: 2,
   },
   title: {
     flex: 1,

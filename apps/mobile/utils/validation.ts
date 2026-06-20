@@ -15,9 +15,9 @@ export type LoginFormValues = z.infer<typeof loginSchema>;
 export const registerSchema = z.object({
   localPhone: localPhoneDigits,
   password: z.string().min(8, 'Password must be at least 8 characters'),
-  agreedToTerms: z.literal(true, {
-    errorMap: () => ({ message: 'You must agree to the terms & conditions' }),
-  }),
+  agreedToTerms: z
+    .boolean()
+    .refine((value) => value === true, { message: 'You must agree to the terms & conditions' }),
 });
 export type RegisterFormValues = z.infer<typeof registerSchema>;
 

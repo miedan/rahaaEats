@@ -9,7 +9,7 @@ interface Props {
   placeholder?: string;
 }
 
-export function PhoneInput({ value, onChangeText, error, placeholder = '78 123 4567' }: Props) {
+export function PhoneInput({ value, onChangeText, error, placeholder = 'phone number' }: Props) {
   const [isFocused, setIsFocused] = useState(false);
 
   const borderColor = error
@@ -20,11 +20,12 @@ export function PhoneInput({ value, onChangeText, error, placeholder = '78 123 4
 
   return (
     <View>
-      <View style={[styles.container, { borderColor }]}>
-        <Text style={styles.prefix}>+250</Text>
-        <View style={styles.divider} />
+      <View style={styles.row}>
+        <View style={styles.prefixBox}>
+          <Text style={styles.prefixText}>+250</Text>
+        </View>
         <TextInput
-          style={styles.input}
+          style={[styles.input, { borderColor }]}
           value={value}
           onChangeText={(text) => onChangeText(text.replace(/\D/g, '').slice(0, 9))}
           onFocus={() => setIsFocused(true)}
@@ -41,30 +42,34 @@ export function PhoneInput({ value, onChangeText, error, placeholder = '78 123 4
 }
 
 const styles = StyleSheet.create({
-  container: {
+  row: {
     flexDirection: 'row',
+    gap: 8,
+  },
+  prefixBox: {
+    height: 52,
+    borderWidth: 1.5,
+    borderColor: COLORS.inputBorderDefault,
+    borderRadius: 12,
+    paddingHorizontal: 16,
     alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.backgroundSubtle,
+  },
+  prefixText: {
+    fontSize: 16,
+    color: COLORS.textSecondary,
+    fontWeight: '600',
+  },
+  input: {
+    flex: 1,
     height: 52,
     borderWidth: 1.5,
     borderRadius: 12,
     paddingHorizontal: 16,
+    fontSize: 16,
+    color: COLORS.textPrimary,
     backgroundColor: COLORS.white,
-  },
-  prefix: {
-    fontSize: 16,
-    color: COLORS.textPrimary,
-    fontWeight: '600',
-  },
-  divider: {
-    width: 1,
-    height: 24,
-    backgroundColor: COLORS.cardBorder,
-    marginHorizontal: 12,
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    color: COLORS.textPrimary,
   },
   errorText: {
     color: COLORS.errorRed,

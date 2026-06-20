@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { StyleSheet, TextInput, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Keyboard, StyleSheet, TextInput, View } from 'react-native';
 import { COLORS } from '../constants/colors';
 
 const LENGTH = 6;
@@ -13,6 +13,7 @@ interface Props {
 
 export function OTPInput({ value, onChangeText, onComplete, error }: Props) {
   const inputs = useRef<Array<TextInput | null>>([]);
+  const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
   const digits = Array.from({ length: LENGTH }, (_, i) => value[i] ?? '');
 
   useEffect(() => {
@@ -27,6 +28,9 @@ export function OTPInput({ value, onChangeText, onComplete, error }: Props) {
 
     if (text && index < LENGTH - 1) {
       inputs.current[index + 1]?.focus();
+    } else if (text && joined.length === LENGTH) {
+      inputs.current[index]?.blur();
+      Keyboard.dismiss();
     }
   }
 
@@ -46,11 +50,19 @@ export function OTPInput({ value, onChangeText, onComplete, error }: Props) {
           }}
           style={[
             styles.box,
-            { borderColor: error ? COLORS.inputBorderError : digit ? COLORS.inputBorderFocused : COLORS.inputBorderDefault },
+            {
+              borderColor: error
+                ? COLORS.inputBorderError
+                : focusedIndex === index
+                  ? COLORS.inputBorderFocused
+                  : COLORS.inputBorderDefault,
+            },
           ]}
           value={digit}
           onChangeText={(text) => handleChange(text, index)}
           onKeyPress={({ nativeEvent }) => handleKeyPress(nativeEvent.key, index)}
+          onFocus={() => setFocusedIndex(index)}
+          onBlur={() => setFocusedIndex((current) => (current === index ? null : current))}
           keyboardType="number-pad"
           maxLength={1}
           textAlign="center"

@@ -10,7 +10,7 @@ interface Props {
   placeholder?: string;
 }
 
-export function PasswordInput({ value, onChangeText, error, placeholder = 'Password' }: Props) {
+export function PasswordInput({ value, onChangeText, error, placeholder = 'password' }: Props) {
   const [isFocused, setIsFocused] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -19,12 +19,14 @@ export function PasswordInput({ value, onChangeText, error, placeholder = 'Passw
     : isFocused
       ? COLORS.inputBorderFocused
       : COLORS.inputBorderDefault;
+  const iconColor = error ? COLORS.errorRed : COLORS.textSecondary;
 
   return (
     <View>
-      <View style={[styles.container, { borderColor }]}>
+      <View style={[styles.container, { borderColor }, !!error && styles.errorBackground]}>
+        <Ionicons name="lock-closed-outline" size={18} color={iconColor} style={styles.lockIcon} />
         <TextInput
-          style={styles.input}
+          style={[styles.input, !!error && styles.errorText]}
           value={value}
           onChangeText={onChangeText}
           onFocus={() => setIsFocused(true)}
@@ -36,13 +38,13 @@ export function PasswordInput({ value, onChangeText, error, placeholder = 'Passw
         />
         <Pressable onPress={() => setIsVisible((prev) => !prev)} hitSlop={8}>
           <Ionicons
-            name={isVisible ? 'eye-off-outline' : 'eye-outline'}
+            name={isVisible ? 'eye-outline' : 'eye-off-outline'}
             size={20}
-            color={COLORS.textSecondary}
+            color={iconColor}
           />
         </Pressable>
       </View>
-      {error ? <Text style={styles.errorText}>{error}</Text> : null}
+      {error ? <Text style={styles.helperErrorText}>{error}</Text> : null}
     </View>
   );
 }
@@ -56,6 +58,13 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: 16,
     backgroundColor: COLORS.white,
+    gap: 10,
+  },
+  errorBackground: {
+    backgroundColor: '#FDECEA',
+  },
+  lockIcon: {
+    marginRight: 0,
   },
   input: {
     flex: 1,
@@ -64,7 +73,10 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: COLORS.errorRed,
-    fontSize: 12,
-    marginTop: 4,
+  },
+  helperErrorText: {
+    color: COLORS.errorRed,
+    fontSize: 13,
+    marginTop: 8,
   },
 });

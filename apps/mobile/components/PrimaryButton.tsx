@@ -22,9 +22,9 @@ export function PrimaryButton({ title, onPress, disabled, loading }: Props) {
       ]}
     >
       {loading ? (
-        <ActivityIndicator color={COLORS.white} />
+        <ActivityIndicator color={isDisabled ? COLORS.textMuted : COLORS.white} />
       ) : (
-        <Text style={styles.text}>{title}</Text>
+        <Text style={[styles.text, isDisabled && styles.disabledText]}>{title}</Text>
       )}
     </Pressable>
   );
@@ -43,11 +43,14 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.darkGreen,
   },
   disabled: {
-    backgroundColor: COLORS.textMuted,
+    backgroundColor: COLORS.inputBorderDefault,
   },
   text: {
     color: COLORS.white,
     fontSize: 16,
     fontWeight: '600',
+  },
+  disabledText: {
+    color: COLORS.textMuted,
   },
 });

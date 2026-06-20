@@ -5,9 +5,6 @@
     "paths": {
       "@/*": [
         "./*"
-      ],
-      "@rahaa/shared": [
-        "../../shared/dist/index.d.ts"
       ]
     }
   },
