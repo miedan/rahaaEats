@@ -77,6 +77,7 @@ export async function listRestaurants(req: Request, res: Response): Promise<void
 export async function getRestaurantById(req: Request, res: Response): Promise<void> {
   try {
     const { id } = req.params;
+    const { lat, lng } = req.query as { lat?: string; lng?: string };
 
     const restaurant = await prisma.restaurant.findFirst({
       where: { id, isApproved: true },
@@ -98,7 +99,14 @@ export async function getRestaurantById(req: Request, res: Response): Promise<vo
       return;
     }
 
-    sendSuccess(res, restaurant);
+    const userLat = lat ? parseFloat(lat) : undefined;
+    const userLng = lng ? parseFloat(lng) : undefined;
+    const distanceM =
+      userLat !== undefined && userLng !== undefined
+        ? Math.round(haversineDistanceM(userLat, userLng, restaurant.lat, restaurant.lng))
+        : undefined;
+
+    sendSuccess(res, { ...restaurant, distanceM });
   } catch {
     sendError(res, 500, 'SERVER_ERROR', 'Failed to fetch restaurant');
   }

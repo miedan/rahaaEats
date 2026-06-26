@@ -87,6 +87,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: COLORS.textPrimary,
     textDecorationLine: 'underline',
+    textDecorationColor: COLORS.linkUnderline,
   },
   resendLinkDisabled: {
     color: COLORS.textMuted,

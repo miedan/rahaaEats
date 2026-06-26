@@ -3,6 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS } from '../constants/colors';
+import { SPACING } from '../constants/spacing';
 
 interface Props {
   title?: string;
@@ -12,17 +13,28 @@ interface Props {
 
 export function BackHeader({ title, onBack, rightAction }: Props) {
   const insets = useSafeAreaInsets();
+  const canGoBack = !!onBack || router.canGoBack();
+
+  function handleBack() {
+    if (onBack) {
+      onBack();
+      return;
+    }
+    if (router.canGoBack()) {
+      router.back();
+    }
+  }
 
   return (
-    <View style={[styles.row, { marginTop: insets.top + 8 }]}>
-      <Pressable
-        onPress={onBack ?? router.back}
-        hitSlop={8}
-        style={[styles.side, styles.backButton]}
-      >
-        <Ionicons name="chevron-back" size={24} color={COLORS.textPrimary} />
-        <Text style={styles.backLabel}>Back</Text>
-      </Pressable>
+    <View style={[styles.row, { marginTop: insets.top + SPACING.sm }]}>
+      <View style={styles.side}>
+        {canGoBack ? (
+          <Pressable onPress={handleBack} hitSlop={8} style={styles.backButton}>
+            <Ionicons name="chevron-back" size={24} color={COLORS.headingText} />
+            <Text style={styles.backLabel}>Back</Text>
+          </Pressable>
+        ) : null}
+      </View>
       <Text style={styles.title} numberOfLines={1}>
         {title}
       </Text>
@@ -43,30 +55,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     height: 48,
+    paddingHorizontal: SPACING.lg,
   },
   side: {
-    minWidth: 32,
+    minWidth: 60,
     alignItems: 'flex-start',
   },
   backButton: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: SPACING.xxs,
   },
   backLabel: {
-    fontSize: 16,
-    color: COLORS.textPrimary,
-    marginLeft: 2,
+    fontFamily: 'Poppins_700Bold',
+    fontSize: 15,
+    color: COLORS.headingText,
   },
   title: {
     flex: 1,
     textAlign: 'center',
+    fontFamily: 'Poppins_600SemiBold',
     fontSize: 18,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
+    color: COLORS.headingText,
   },
   action: {
-    color: COLORS.primaryGreen,
-    fontSize: 14,
-    fontWeight: '600',
+    color: COLORS.primary600,
+    fontFamily: 'Poppins_600SemiBold',
+    fontSize: 15,
   },
 });

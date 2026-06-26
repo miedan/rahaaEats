@@ -73,6 +73,13 @@ export async function updateAddress(req: AuthRequest, res: Response): Promise<vo
       return;
     }
 
+    if (req.body.isDefault) {
+      await prisma.address.updateMany({
+        where: { userId: req.userId, id: { not: id } },
+        data: { isDefault: false },
+      });
+    }
+
     const address = await prisma.address.update({
       where: { id },
       data: req.body,

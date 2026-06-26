@@ -23,7 +23,12 @@ router.get(
 
 router.get(
   '/:id',
-  [param('id').notEmpty().withMessage('Invalid restaurant id'), validate],
+  [
+    param('id').notEmpty().withMessage('Invalid restaurant id'),
+    query('lat').optional().isFloat({ min: -90, max: 90 }).withMessage('Invalid latitude'),
+    query('lng').optional().isFloat({ min: -180, max: 180 }).withMessage('Invalid longitude'),
+    validate,
+  ],
   getRestaurantById
 );
 

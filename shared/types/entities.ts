@@ -39,20 +39,46 @@ export interface User {
   createdAt: string;
 }
 
+export type BuildingType = 'HOUSE' | 'APARTMENT' | 'OFFICE' | 'OTHER';
+
 export interface Address {
   id: string;
   userId: string;
   label: string;
   lat: number;
   lng: number;
-  buildingType: string | null;
-  unitNumber: string | null;
+  formattedAddress: string | null;
+  buildingType: BuildingType | null;
+  houseNumber: string | null;
+  apartmentName: string | null;
+  buildingNumber: string | null;
+  floorNumber: string | null;
+  doorNumber: string | null;
   district: string;
   districtPin: string | null;
   deliveryInstructions: string | null;
   contactName: string | null;
   contactPhone: string | null;
   isDefault: boolean;
+}
+
+export interface CreateAddressRequest {
+  label: string;
+  lat: number;
+  lng: number;
+  formattedAddress?: string;
+  buildingType?: BuildingType;
+  houseNumber?: string;
+  apartmentName?: string;
+  buildingNumber?: string;
+  floorNumber?: string;
+  doorNumber?: string;
+  district: string;
+  districtPin?: string;
+  deliveryInstructions?: string;
+  contactName?: string;
+  contactPhone?: string;
+  isDefault?: boolean;
 }
 
 export interface Restaurant {
@@ -101,6 +127,11 @@ export interface MenuItem {
   ingredients: string | null;
   allergens: string | null;
   avgRating: number;
+}
+
+export interface CategorySummary {
+  category: FoodCategory;
+  itemCount: number;
 }
 
 export interface FoodSearchResult {
@@ -157,6 +188,21 @@ export interface OrderItem {
   quantity: number;
   unitPriceRwf: number;
   notes: string | null;
+  menuItem?: { name: string; photoUrl: string | null };
+}
+
+export interface OrderDetail extends Order {
+  items: OrderItem[];
+  restaurant: { businessName: string };
+  deliveryAddress?: Address;
+}
+
+export interface CreateOrderRequest {
+  restaurantId: string;
+  items: { menuItemId: string; quantity: number }[];
+  deliveryAddressId: string;
+  paymentMethod: PaymentMethod;
+  promoCode?: string;
 }
 
 export interface PromoCode {
@@ -168,6 +214,20 @@ export interface PromoCode {
   maxUses: number | null;
   usedCount: number;
   expiresAt: string | null;
+}
+
+export interface PromoValidationResult {
+  valid: boolean;
+  discountRwf: number;
+  description: string;
+}
+
+export interface SavedMomoNumber {
+  id: string;
+  userId: string;
+  phoneNumber: string;
+  provider: MomoProvider;
+  isDefault: boolean;
 }
 
 export interface FoodRating {
@@ -187,4 +247,42 @@ export interface RestaurantRating {
   customerId: string;
   rating: number;
   comment: string | null;
+}
+
+export interface MenuItemDetail {
+  id: string;
+  name: string;
+  description: string | null;
+  category: FoodCategory;
+  priceRwf: number;
+  photoUrl: string | null;
+  avgRating: number;
+  prepTimeMins: number | null;
+  ingredients: string | null;
+  allergens: string | null;
+  restaurantId: string;
+  restaurantName: string;
+  similarItems: FoodSearchResult[];
+}
+
+export interface FoodReviewSummary {
+  avgRating: number;
+  total: number;
+  breakdown: { stars: number; count: number }[];
+  reviews: {
+    id: string;
+    rating: number;
+    comment: string | null;
+    photoUrl: string | null;
+    createdAt: string;
+    customerName: string | null;
+    customerPhotoUrl: string | null;
+  }[];
+}
+
+export type RestaurantReviewSummary = FoodReviewSummary;
+
+export interface RestaurantDetail extends Restaurant {
+  hours: RestaurantHours[];
+  menuSections: (MenuSection & { items: MenuItem[] })[];
 }

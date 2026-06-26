@@ -184,5 +184,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     textDecorationLine: 'underline',
+    textDecorationColor: COLORS.linkUnderline,
   },
 });

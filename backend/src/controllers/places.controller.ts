@@ -3,6 +3,7 @@ import { sendSuccess, sendError } from '../utils/response';
 import { ENV } from '../config/env';
 
 const PLACES_AUTOCOMPLETE_URL = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
+const PLACE_DETAILS_URL = 'https://maps.googleapis.com/maps/api/place/details/json';
 const GEOCODE_URL = 'https://maps.googleapis.com/maps/api/geocode/json';
 
 export async function autocomplete(req: Request, res: Response): Promise<void> {
@@ -54,6 +55,54 @@ export async function autocomplete(req: Request, res: Response): Promise<void> {
     sendSuccess(res, results);
   } catch {
     sendError(res, 500, 'SERVER_ERROR', 'Failed to fetch autocomplete results');
+  }
+}
+
+export async function placeDetails(req: Request, res: Response): Promise<void> {
+  try {
+    const { placeId } = req.query as { placeId?: string };
+
+    if (!placeId) {
+      sendError(res, 422, 'VALIDATION_ERROR', 'placeId is required');
+      return;
+    }
+
+    const params = new URLSearchParams({
+      place_id: placeId,
+      key: ENV.GOOGLE_MAPS_API_KEY,
+      fields: 'formatted_address,geometry,address_component',
+      language: 'en',
+    });
+
+    const response = await fetch(`${PLACE_DETAILS_URL}?${params}`);
+    const data = await response.json() as {
+      status: string;
+      result?: {
+        formatted_address: string;
+        geometry: { location: { lat: number; lng: number } };
+        address_components: Array<{ long_name: string; types: string[] }>;
+      };
+    };
+
+    if (data.status !== 'OK' || !data.result) {
+      sendError(res, 502, 'PLACES_ERROR', `Place details API error: ${data.status}`);
+      return;
+    }
+
+    const district =
+      data.result.address_components.find((c) => c.types.includes('administrative_area_level_2'))
+        ?.long_name ??
+      data.result.address_components.find((c) => c.types.includes('locality'))?.long_name ??
+      '';
+
+    sendSuccess(res, {
+      formattedAddress: data.result.formatted_address,
+      district,
+      lat: data.result.geometry.location.lat,
+      lng: data.result.geometry.location.lng,
+    });
+  } catch {
+    sendError(res, 500, 'SERVER_ERROR', 'Failed to fetch place details');
   }
 }
 

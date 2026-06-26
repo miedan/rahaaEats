@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { COLORS } from '../constants/colors';
+import { SPACING, RADII } from '../constants/spacing';
 
 interface Props {
   value: string;
@@ -12,27 +13,30 @@ interface Props {
 export function PhoneInput({ value, onChangeText, error, placeholder = 'phone number' }: Props) {
   const [isFocused, setIsFocused] = useState(false);
 
+  const borderWidth = isFocused && !error ? 2 : 1;
   const borderColor = error
-    ? COLORS.inputBorderError
+    ? COLORS.dangerText
     : isFocused
-      ? COLORS.inputBorderFocused
-      : COLORS.inputBorderDefault;
+      ? COLORS.borderPrimary
+      : COLORS.borderDefault;
 
   return (
     <View>
       <View style={styles.row}>
         <View style={styles.prefixBox}>
-          <Text style={styles.prefixText}>+250</Text>
+          <Text style={styles.prefixText} numberOfLines={1}>
+            +250
+          </Text>
         </View>
         <TextInput
-          style={[styles.input, { borderColor }]}
+          style={[styles.input, { borderColor, borderWidth }]}
           value={value}
           onChangeText={(text) => onChangeText(text.replace(/\D/g, '').slice(0, 9))}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           keyboardType="number-pad"
           placeholder={placeholder}
-          placeholderTextColor={COLORS.textMuted}
+          placeholderTextColor={COLORS.disabledText}
           maxLength={9}
         />
       </View>
@@ -44,36 +48,37 @@ export function PhoneInput({ value, onChangeText, error, placeholder = 'phone nu
 const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
-    gap: 8,
+    gap: SPACING.xs,
   },
   prefixBox: {
-    height: 52,
-    borderWidth: 1.5,
-    borderColor: COLORS.inputBorderDefault,
-    borderRadius: 12,
-    paddingHorizontal: 16,
+    height: 48,
+    minWidth: 68,
+    borderRadius: RADII.sm,
+    paddingHorizontal: SPACING.xs,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.backgroundSubtle,
+    backgroundColor: COLORS.disabledBackground,
   },
   prefixText: {
-    fontSize: 16,
-    color: COLORS.textSecondary,
-    fontWeight: '600',
+    fontFamily: 'Poppins_400Regular',
+    fontSize: 15,
+    color: COLORS.disabledText,
+    flexShrink: 0,
   },
   input: {
     flex: 1,
-    height: 52,
-    borderWidth: 1.5,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    fontSize: 16,
-    color: COLORS.textPrimary,
-    backgroundColor: COLORS.white,
+    height: 48,
+    borderRadius: RADII.sm,
+    paddingHorizontal: SPACING.md,
+    fontFamily: 'Poppins_400Regular',
+    fontSize: 15,
+    color: COLORS.headingText,
+    backgroundColor: COLORS.elementBackground,
   },
   errorText: {
-    color: COLORS.errorRed,
-    fontSize: 12,
-    marginTop: 4,
+    color: COLORS.dangerText,
+    fontFamily: 'Poppins_400Regular',
+    fontSize: 13,
+    marginTop: SPACING.xs,
   },
 });

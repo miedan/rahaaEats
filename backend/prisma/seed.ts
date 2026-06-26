@@ -107,7 +107,26 @@ async function main() {
     });
   }
 
-  console.log('Seed complete:', { restaurant: samba.businessName, items: items.length });
+  const promoCodes = [
+    { code: 'PIZZA10', discountType: 'PERCENT' as const, discountValue: 10, minOrderRwf: 0 },
+    { code: 'WELCOME50', discountType: 'PERCENT' as const, discountValue: 50, minOrderRwf: 0 },
+    { code: 'WEEKEND5', discountType: 'FIXED' as const, discountValue: 1000, minOrderRwf: 25000 },
+    { code: 'EXTRA20', discountType: 'PERCENT' as const, discountValue: 20, minOrderRwf: 30000 },
+  ];
+
+  for (const promo of promoCodes) {
+    await prisma.promoCode.upsert({
+      where: { code: promo.code },
+      update: {},
+      create: promo,
+    });
+  }
+
+  console.log('Seed complete:', {
+    restaurant: samba.businessName,
+    items: items.length,
+    promoCodes: promoCodes.length,
+  });
 }
 
 main()

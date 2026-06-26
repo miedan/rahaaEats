@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../constants/colors';
+import { SPACING, RADII } from '../constants/spacing';
 
 interface Props {
   value: string;
@@ -14,17 +15,20 @@ export function PasswordInput({ value, onChangeText, error, placeholder = 'passw
   const [isFocused, setIsFocused] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
+  const borderWidth = isFocused && !error ? 2 : 1;
   const borderColor = error
-    ? COLORS.inputBorderError
+    ? COLORS.dangerText
     : isFocused
-      ? COLORS.inputBorderFocused
-      : COLORS.inputBorderDefault;
-  const iconColor = error ? COLORS.errorRed : COLORS.textSecondary;
+      ? COLORS.borderPrimary
+      : COLORS.borderDefault;
+  const iconColor = error ? COLORS.dangerText : COLORS.iconDefault;
 
   return (
     <View>
-      <View style={[styles.container, { borderColor }, !!error && styles.errorBackground]}>
-        <Ionicons name="lock-closed-outline" size={18} color={iconColor} style={styles.lockIcon} />
+      <View
+        style={[styles.container, { borderColor, borderWidth }, !!error && styles.errorBackground]}
+      >
+        <Ionicons name="lock-closed-outline" size={24} color={iconColor} style={styles.lockIcon} />
         <TextInput
           style={[styles.input, !!error && styles.errorText]}
           value={value}
@@ -33,13 +37,13 @@ export function PasswordInput({ value, onChangeText, error, placeholder = 'passw
           onBlur={() => setIsFocused(false)}
           secureTextEntry={!isVisible}
           placeholder={placeholder}
-          placeholderTextColor={COLORS.textMuted}
+          placeholderTextColor={COLORS.disabledText}
           autoCapitalize="none"
         />
         <Pressable onPress={() => setIsVisible((prev) => !prev)} hitSlop={8}>
           <Ionicons
             name={isVisible ? 'eye-outline' : 'eye-off-outline'}
-            size={20}
+            size={24}
             color={iconColor}
           />
         </Pressable>
@@ -53,30 +57,31 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: 52,
-    borderWidth: 1.5,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    backgroundColor: COLORS.white,
-    gap: 10,
+    height: 48,
+    borderRadius: RADII.sm,
+    paddingHorizontal: SPACING.md,
+    backgroundColor: COLORS.elementBackground,
+    gap: SPACING.sm,
   },
   errorBackground: {
-    backgroundColor: '#FDECEA',
+    backgroundColor: COLORS.lightRedBackground,
   },
   lockIcon: {
     marginRight: 0,
   },
   input: {
     flex: 1,
-    fontSize: 16,
-    color: COLORS.textPrimary,
+    fontFamily: 'Poppins_400Regular',
+    fontSize: 15,
+    color: COLORS.headingText,
   },
   errorText: {
-    color: COLORS.errorRed,
+    color: COLORS.dangerText,
   },
   helperErrorText: {
-    color: COLORS.errorRed,
+    color: COLORS.dangerText,
+    fontFamily: 'Poppins_400Regular',
     fontSize: 13,
-    marginTop: 8,
+    marginTop: SPACING.xs,
   },
 });

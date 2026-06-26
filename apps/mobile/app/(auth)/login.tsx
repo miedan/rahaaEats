@@ -11,8 +11,9 @@ import {
 import { router } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS } from '../../constants/colors';
+import { SPACING, RADII } from '../../constants/spacing';
+import { BackHeader } from '../../components/BackHeader';
 import { PhoneInput } from '../../components/PhoneInput';
 import { PasswordInput } from '../../components/PasswordInput';
 import { PrimaryButton } from '../../components/PrimaryButton';
@@ -23,7 +24,6 @@ import { ApiError } from '../../services/api';
 import { useAuthStore } from '../../store/authStore';
 
 export default function LoginScreen() {
-  const insets = useSafeAreaInsets();
   const setSession = useAuthStore((state) => state.setSession);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -69,10 +69,8 @@ export default function LoginScreen() {
       style={styles.flex}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <ScrollView
-        contentContainerStyle={[styles.scroll, { paddingTop: insets.top + 24 }]}
-        keyboardShouldPersistTaps="handled"
-      >
+      <BackHeader />
+      <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
         <Text style={styles.title}>Log in to your{'\n'}account</Text>
 
         <View style={styles.form}>
@@ -120,7 +118,7 @@ export default function LoginScreen() {
         />
 
         <View style={styles.signupRow}>
-          <Text style={styles.signupText}>Don&apos;t have an account? </Text>
+          <Text style={styles.signupText}>Don&apos;t have an account?</Text>
           <Pressable onPress={() => router.push('/(auth)/register')}>
             <Text style={styles.signupLink}>Sign up</Text>
           </Pressable>
@@ -133,34 +131,38 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   flex: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.elementBackground,
   },
   scroll: {
     flexGrow: 1,
-    paddingHorizontal: 24,
-    paddingBottom: 32,
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.xs,
+    paddingBottom: SPACING.xxl,
   },
   title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
-    marginTop: 8,
-    marginBottom: 24,
+    fontFamily: 'Poppins_700Bold',
+    fontSize: 32,
+    lineHeight: 38,
+    letterSpacing: -0.64,
+    color: COLORS.headingText,
+    marginBottom: SPACING.lg,
   },
   form: {
     gap: 0,
   },
   fieldSpacing: {
-    marginTop: 12,
+    marginTop: SPACING.sm,
   },
   forgotLink: {
     alignSelf: 'center',
-    marginTop: 16,
+    paddingHorizontal: SPACING.xs,
+    borderRadius: RADII.xs,
+    marginTop: SPACING.md,
   },
   forgotText: {
-    color: COLORS.primaryGreen,
-    fontSize: 14,
-    fontWeight: '600',
+    color: COLORS.primary700,
+    fontFamily: 'Poppins_700Bold',
+    fontSize: 15,
   },
   spacer: {
     flex: 1,
@@ -169,16 +171,19 @@ const styles = StyleSheet.create({
   signupRow: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 16,
+    gap: 4,
+    marginTop: SPACING.lg,
   },
   signupText: {
-    color: COLORS.textSecondary,
-    fontSize: 14,
+    color: COLORS.paragraphText,
+    fontFamily: 'Poppins_400Regular',
+    fontSize: 15,
   },
   signupLink: {
-    color: COLORS.textPrimary,
-    fontSize: 14,
-    fontWeight: '700',
+    color: COLORS.headingText,
+    fontFamily: 'Poppins_600SemiBold',
+    fontSize: 15,
     textDecorationLine: 'underline',
+    textDecorationColor: COLORS.linkUnderline,
   },
 });

@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { FoodCategory } from '@prisma/client';
 import prisma from '../config/prisma';
 import { sendSuccess, sendError } from '../utils/response';
 import { haversineDistanceM, estimateEtaMins } from '../utils/geo';
@@ -7,9 +8,9 @@ const DEFAULT_LIMIT = 20;
 
 export async function search(req: Request, res: Response): Promise<void> {
   try {
-    const { q, type, lat, lng, sort, limit } = req.query as {
+    const { q, type, lat, lng, sort, limit, category, restaurantId } = req.query as {
       q?: string; type?: string; lat?: string; lng?: string;
-      sort?: string; limit?: string;
+      sort?: string; limit?: string; category?: FoodCategory; restaurantId?: string;
     };
 
     const searchType = type ?? 'all';
@@ -18,11 +19,11 @@ export async function search(req: Request, res: Response): Promise<void> {
     const take = limit ? Math.max(1, Math.min(parseInt(limit, 10), 50)) : DEFAULT_LIMIT;
 
     const foods = searchType === 'all' || searchType === 'foods'
-      ? await searchFoods(q, sort, take)
+      ? await searchFoods(q, sort, take, category, restaurantId)
       : [];
 
     const restaurants = searchType === 'all' || searchType === 'restaurants'
-      ? await searchRestaurants(q, userLat, userLng, take)
+      ? await searchRestaurants(q, userLat, userLng, take, category)
       : [];
 
     sendSuccess(res, { foods, restaurants });
@@ -31,12 +32,20 @@ export async function search(req: Request, res: Response): Promise<void> {
   }
 }
 
-async function searchFoods(q: string | undefined, sort: string | undefined, take: number) {
+async function searchFoods(
+  q: string | undefined,
+  sort: string | undefined,
+  take: number,
+  category: FoodCategory | undefined,
+  restaurantId: string | undefined
+) {
   const items = await prisma.menuItem.findMany({
     where: {
       isAvailable: true,
       restaurant: { isApproved: true },
       ...(q ? { name: { contains: q, mode: 'insensitive' } } : {}),
+      ...(category ? { category } : {}),
+      ...(restaurantId ? { restaurantId } : {}),
     },
     include: { restaurant: { select: { businessName: true } } },
     orderBy: sort === 'rating' ? { avgRating: 'desc' } : { name: 'asc' },
@@ -59,12 +68,14 @@ async function searchRestaurants(
   q: string | undefined,
   userLat: number | undefined,
   userLng: number | undefined,
-  take: number
+  take: number,
+  category: FoodCategory | undefined
 ) {
   const restaurants = await prisma.restaurant.findMany({
     where: {
       isApproved: true,
       ...(q ? { businessName: { contains: q, mode: 'insensitive' } } : {}),
+      ...(category ? { menuItems: { some: { category, isAvailable: true } } } : {}),
     },
   });
 

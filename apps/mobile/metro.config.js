@@ -11,5 +11,6 @@ config.resolver.nodeModulesPaths = [
   path.resolve(projectRoot, 'node_modules'),
   path.resolve(workspaceRoot, 'node_modules'),
 ];
+config.watcher = { watchman: { deferStates: [] }, healthCheck: { enabled: false } };
 
 module.exports = config;

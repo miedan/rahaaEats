@@ -2,7 +2,7 @@ import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { COLORS } from '../constants/colors';
+import { ONBOARDING_COLORS } from '../constants/colors';
 
 interface Props {
   image: number;
@@ -18,11 +18,11 @@ export function OnboardingSlide({ image, title, subtitle, width, footerHeight }:
   return (
     <ImageBackground source={image} style={[styles.slide, { width }]} resizeMode="cover">
       <LinearGradient
-        colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.85)']}
-        locations={[0.4, 1]}
+        colors={['rgba(38,39,37,0)', 'rgba(38,39,37,0.92)']}
+        locations={[0.45, 1]}
         style={styles.gradient}
       />
-      <View style={[styles.brandRow, { paddingTop: insets.top + 16 }]}>
+      <View style={[styles.brandRow, { paddingTop: insets.top + 12 }]}>
         <Image
           source={require('../assets/images/branding/logo-green.png')}
           style={styles.logo}
@@ -54,31 +54,34 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
-    paddingHorizontal: 24,
+    gap: 18,
+    paddingHorizontal: 20,
   },
   logo: {
-    width: 36,
-    height: 36,
+    width: 60,
+    height: 35,
   },
   brandText: {
-    color: COLORS.white,
+    color: ONBOARDING_COLORS.headingText,
     fontSize: 24,
-    fontWeight: '700',
+    lineHeight: 33,
   },
   textBlock: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
     paddingBottom: 32,
   },
   title: {
-    color: COLORS.white,
-    fontSize: 28,
-    fontWeight: '700',
-    marginBottom: 8,
+    color: ONBOARDING_COLORS.headingText,
+    fontFamily: 'Poppins_700Bold',
+    fontSize: 32,
+    lineHeight: 38,
+    letterSpacing: -0.64,
+    marginBottom: 16,
   },
   subtitle: {
-    color: 'rgba(255,255,255,0.85)',
-    fontSize: 14,
-    lineHeight: 20,
+    color: ONBOARDING_COLORS.bodyText,
+    fontFamily: 'Poppins_400Regular',
+    fontSize: 15,
+    lineHeight: 26,
   },
 });

@@ -13,6 +13,11 @@ router.get(
     query('lng').optional().isFloat({ min: -180, max: 180 }).withMessage('Invalid longitude'),
     query('sort').optional().isIn(['rating']).withMessage('Invalid sort'),
     query('limit').optional().isInt({ min: 1, max: 50 }).withMessage('Invalid limit'),
+    query('category')
+      .optional()
+      .isIn(['BURGER', 'BEEF', 'DESSERT', 'JUICE', 'NOODLES', 'PIZZA', 'SALAD', 'OTHER'])
+      .withMessage('Invalid category'),
+    query('restaurantId').optional().isString(),
     validate,
   ],
   search

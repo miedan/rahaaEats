@@ -20,4 +20,7 @@ export const ENV = {
   AT_SENDER_ID: process.env.AT_SENDER_ID ?? '',
   GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY ?? '',
   FRONTEND_URL: process.env.FRONTEND_URL ?? 'http://localhost:8081',
+  CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME ?? '',
+  CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY ?? '',
+  CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET ?? '',
 };

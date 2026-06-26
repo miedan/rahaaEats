@@ -85,6 +85,21 @@ model User {
   foodRatings        FoodRating[]
   restaurantRatings  RestaurantRating[]
   otpCodes           OtpCode[]
+  favorites          Favorite[]
+  savedMomoNumbers   SavedMomoNumber[]
+}
+
+model SavedMomoNumber {
+  id          String       @id @default(uuid())
+  userId      String
+  phoneNumber String
+  provider    MomoProvider
+  isDefault   Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, phoneNumber])
 }
 
 model OtpCode {
@@ -212,8 +227,21 @@ model MenuItem {
   restaurant   Restaurant  @relation(fields: [restaurantId], references: [id])
   orderItems   OrderItem[]
   foodRatings  FoodRating[]
+  favorites    Favorite[]
 
   @@index([category])
+}
+
+model Favorite {
+  id         String   @id @default(uuid())
+  userId     String
+  menuItemId String
+  createdAt  DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, menuItemId])
 }
 
 model Order {

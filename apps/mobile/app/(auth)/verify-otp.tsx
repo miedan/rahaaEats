@@ -47,7 +47,7 @@ export default function VerifyOtpScreen() {
       const result = await verifyOtp({ phoneNumber, otp });
       await setSession(result.user, result.accessToken, result.refreshToken);
       resetRegisterFlow();
-      router.replace('/(tabs)');
+      router.replace('/(auth)/create-profile');
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.message);
@@ -113,6 +113,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: COLORS.textPrimary,
     textDecorationLine: 'underline',
+    textDecorationColor: COLORS.linkUnderline,
   },
   resendLinkDisabled: {
     color: COLORS.textMuted,

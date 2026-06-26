@@ -31,6 +31,12 @@ export const forgotPasswordPhoneSchema = z.object({
 });
 export type ForgotPasswordPhoneValues = z.infer<typeof forgotPasswordPhoneSchema>;
 
+export const createProfileSchema = z.object({
+  fullName: z.string().min(1, 'Full name is required'),
+  email: z.union([z.string().email('Enter a valid email address'), z.literal('')]).optional(),
+});
+export type CreateProfileFormValues = z.infer<typeof createProfileSchema>;
+
 export const newPasswordSchema = z
   .object({
     newPassword: z.string().min(8, 'Password must be at least 8 characters'),

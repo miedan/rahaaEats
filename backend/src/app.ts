@@ -7,10 +7,18 @@ import addressRoutes from './routes/address.routes';
 import placesRoutes from './routes/places.routes';
 import restaurantRoutes from './routes/restaurant.routes';
 import searchRoutes from './routes/search.routes';
+import categoryRoutes from './routes/category.routes';
+import uploadRoutes from './routes/upload.routes';
+import menuItemRoutes from './routes/menuItem.routes';
+import ratingRoutes from './routes/rating.routes';
+import favoriteRoutes from './routes/favorite.routes';
+import promoRoutes from './routes/promo.routes';
+import momoRoutes from './routes/momo.routes';
+import orderRoutes from './routes/order.routes';
 
 const app = express();
 
-app.use(cors({ origin: ENV.FRONTEND_URL, credentials: true }));
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -24,6 +32,14 @@ app.use('/api/v1/addresses', addressRoutes);
 app.use('/api/v1/places', placesRoutes);
 app.use('/api/v1/restaurants', restaurantRoutes);
 app.use('/api/v1/search', searchRoutes);
+app.use('/api/v1/categories', categoryRoutes);
+app.use('/api/v1/uploads', uploadRoutes);
+app.use('/api/v1/menu-items', menuItemRoutes);
+app.use('/api/v1/ratings', ratingRoutes);
+app.use('/api/v1/favorites', favoriteRoutes);
+app.use('/api/v1/promo', promoRoutes);
+app.use('/api/v1/momo', momoRoutes);
+app.use('/api/v1/orders', orderRoutes);
 
 app.use((_req, res) => {
   res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Route not found' } });
