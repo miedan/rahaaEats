@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import multer from 'multer';
 import { authenticate } from '../middleware/auth.middleware';
-import { uploadProfilePhoto, uploadReviewPhoto } from '../controllers/upload.controller';
+import { uploadProfilePhoto, uploadReviewPhoto, uploadRestaurantPhoto } from '../controllers/upload.controller';
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -17,5 +17,8 @@ router.post('/profile-photo', upload.single('photo'), uploadProfilePhoto);
 
 // POST /api/v1/uploads/review-photo
 router.post('/review-photo', upload.single('photo'), uploadReviewPhoto);
+
+// POST /api/v1/uploads/restaurant-photo
+router.post('/restaurant-photo', upload.single('photo'), uploadRestaurantPhoto);
 
 export default router;

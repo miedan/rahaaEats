@@ -42,3 +42,4 @@ function handleUpload(folder: string) {
 
 export const uploadProfilePhoto = handleUpload('rahaa/profile-photos');
 export const uploadReviewPhoto = handleUpload('rahaa/review-photos');
+export const uploadRestaurantPhoto = handleUpload('rahaa/restaurant-photos');

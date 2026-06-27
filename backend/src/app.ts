@@ -15,6 +15,7 @@ import favoriteRoutes from './routes/favorite.routes';
 import promoRoutes from './routes/promo.routes';
 import momoRoutes from './routes/momo.routes';
 import orderRoutes from './routes/order.routes';
+import adminRoutes from './routes/admin.routes';
 
 const app = express();
 
@@ -40,6 +41,7 @@ app.use('/api/v1/favorites', favoriteRoutes);
 app.use('/api/v1/promo', promoRoutes);
 app.use('/api/v1/momo', momoRoutes);
 app.use('/api/v1/orders', orderRoutes);
+app.use('/api/v1/admin', adminRoutes);
 
 app.use((_req, res) => {
   res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Route not found' } });

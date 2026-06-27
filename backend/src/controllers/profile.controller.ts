@@ -56,7 +56,12 @@ export async function updateProfile(req: AuthRequest, res: Response): Promise<vo
     });
 
     sendSuccess(res, user);
-  } catch {
+  } catch (err: unknown) {
+    const code = (err as { code?: string })?.code;
+    if (code === 'P2002') {
+      sendError(res, 409, 'EMAIL_TAKEN', 'That email address is already in use');
+      return;
+    }
     sendError(res, 500, 'SERVER_ERROR', 'Failed to update profile');
   }
 }
