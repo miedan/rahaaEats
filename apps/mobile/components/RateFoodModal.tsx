@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,6 +11,8 @@ import { ApiError } from '../services/api';
 import { createFoodRating } from '../services/rating.service';
 import { uploadReviewPhoto } from '../services/upload.service';
 
+const MAX_PHOTOS = 3;
+
 interface Props {
   visible: boolean;
   onClose: () => void;
@@ -21,12 +23,19 @@ interface Props {
 
 export function RateFoodModal({ visible, onClose, onSubmitted, orderId, menuItemId }: Props) {
   const insets = useSafeAreaInsets();
+  const [phase, setPhase] = useState<'prompt' | 'writing'>('prompt');
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
-  const [photoUri, setPhotoUri] = useState<string | null>(null);
+  const [photoUris, setPhotoUris] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  function handleStarPress(star: number) {
+    setRating(star);
+    if (phase === 'prompt') setPhase('writing');
+  }
+
   async function pickPhoto() {
+    if (photoUris.length >= MAX_PHOTOS) return;
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) return;
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -35,21 +44,37 @@ export function RateFoodModal({ visible, onClose, onSubmitted, orderId, menuItem
       aspect: [1, 1],
       quality: 0.8,
     });
-    if (!result.canceled) setPhotoUri(result.assets[0].uri);
+    if (!result.canceled) setPhotoUris((prev) => [...prev, result.assets[0].uri]);
+  }
+
+  function removePhoto(index: number) {
+    setPhotoUris((prev) => prev.filter((_, i) => i !== index));
   }
 
   function reset() {
+    setPhase('prompt');
     setRating(0);
     setComment('');
-    setPhotoUri(null);
+    setPhotoUris([]);
+  }
+
+  function handleClose() {
+    reset();
+    onClose();
   }
 
   async function handleSubmit() {
     if (rating === 0) return;
     setIsSubmitting(true);
     try {
-      const photoUrl = photoUri ? await uploadReviewPhoto(photoUri) : undefined;
-      await createFoodRating({ orderId, menuItemId, rating, comment: comment || undefined, photoUrl });
+      const uploadedUrls = await Promise.all(photoUris.map((uri) => uploadReviewPhoto(uri)));
+      await createFoodRating({
+        orderId,
+        menuItemId,
+        rating,
+        comment: comment.trim() || undefined,
+        photoUrl: uploadedUrls[0],
+      });
       reset();
       onSubmitted();
     } catch (err) {
@@ -61,63 +86,124 @@ export function RateFoodModal({ visible, onClose, onSubmitted, orderId, menuItem
   }
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <Pressable style={styles.backdrop} onPress={onClose} />
-      <View style={[styles.sheet, { paddingBottom: insets.bottom + SPACING.lg }]}>
-        <View style={styles.bar} />
-        <Text style={styles.title}>Did you like the food!</Text>
-        <Text style={styles.subtitle}>Please rate this food so, that we can improve it!</Text>
-
-        <View style={styles.starsRow}>
-          {[1, 2, 3, 4, 5].map((star) => (
-            <Pressable key={star} onPress={() => setRating(star)} hitSlop={8}>
-              <Ionicons
-                name="star"
-                size={40}
-                color={star <= rating ? COLORS.ratingAmber : COLORS.borderDefault}
-              />
-            </Pressable>
-          ))}
-        </View>
-
-        <TextInput
-          style={styles.textArea}
-          value={comment}
-          onChangeText={setComment}
-          placeholder="Write details (optional)"
-          placeholderTextColor={COLORS.paragraphText}
-          multiline
-        />
-
-        <Text style={styles.attachLabel}>Attach photos (Optional)</Text>
-        {photoUri ? (
-          <View style={styles.photoSlot}>
-            <Image source={{ uri: photoUri }} style={styles.photoImage} contentFit="cover" />
-            <Pressable style={styles.photoRemove} onPress={() => setPhotoUri(null)}>
-              <Ionicons name="close" size={14} color={COLORS.white} />
-            </Pressable>
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={handleClose}>
+      {phase === 'prompt' ? (
+        <View style={styles.promptBackdrop}>
+          <Pressable style={StyleSheet.absoluteFill} onPress={handleClose} />
+          <View style={styles.promptCard}>
+            <Text style={styles.title}>Did you like the food!</Text>
+            <Text style={styles.subtitle}>
+              Please rate this food so, that we can improve it!
+            </Text>
+            <View style={styles.starsRow}>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Pressable key={star} onPress={() => handleStarPress(star)} hitSlop={8}>
+                  <Ionicons
+                    name="star"
+                    size={40}
+                    color={star <= rating ? COLORS.ratingAmber : COLORS.borderDefault}
+                  />
+                </Pressable>
+              ))}
+            </View>
           </View>
-        ) : (
-          <Pressable style={styles.photoSlot} onPress={pickPhoto}>
-            <Ionicons name="camera-outline" size={24} color={COLORS.iconDefault} />
-          </Pressable>
-        )}
+        </View>
+      ) : (
+        <View style={styles.sheetBackdrop}>
+          <Pressable style={StyleSheet.absoluteFill} onPress={handleClose} />
+          <View style={[styles.sheet, { paddingBottom: insets.bottom + SPACING.lg }]}>
+            <View style={styles.bar} />
+            <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+              <Text style={styles.title}>Did you like the food!</Text>
+              <Text style={[styles.subtitle, { marginBottom: SPACING.md }]}>
+                Please rate this food so, that we can improve it!
+              </Text>
 
-        <PrimaryButton title="Rate" onPress={handleSubmit} disabled={rating === 0} loading={isSubmitting} />
-      </View>
+              <View style={[styles.starsRow, { marginBottom: SPACING.md }]}>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Pressable key={star} onPress={() => handleStarPress(star)} hitSlop={8}>
+                    <Ionicons
+                      name="star"
+                      size={40}
+                      color={star <= rating ? COLORS.ratingAmber : COLORS.borderDefault}
+                    />
+                  </Pressable>
+                ))}
+              </View>
+
+              <TextInput
+                style={styles.textArea}
+                value={comment}
+                onChangeText={setComment}
+                placeholder="Write details (optional)"
+                placeholderTextColor={COLORS.inactiveText}
+                multiline
+                textAlignVertical="top"
+              />
+
+              <Text style={[styles.attachLabel, { marginTop: SPACING.md }]}>
+                Attach photos (Optional)
+              </Text>
+              <View style={styles.photosRow}>
+                {photoUris.map((uri, index) => (
+                  <View key={uri} style={styles.photoSlot}>
+                    <Image source={{ uri }} style={styles.photoImage} contentFit="cover" />
+                    <Pressable style={styles.photoRemove} onPress={() => removePhoto(index)}>
+                      <Ionicons name="close" size={14} color={COLORS.white} />
+                    </Pressable>
+                  </View>
+                ))}
+                {photoUris.length < MAX_PHOTOS && (
+                  <Pressable style={styles.photoSlot} onPress={pickPhoto}>
+                    <Ionicons name="camera-outline" size={24} color={COLORS.iconDefault} />
+                  </Pressable>
+                )}
+              </View>
+
+              <View style={{ marginTop: SPACING.lg }}>
+                <PrimaryButton
+                  title="Rate"
+                  onPress={handleSubmit}
+                  disabled={rating === 0}
+                  loading={isSubmitting}
+                />
+              </View>
+            </ScrollView>
+          </View>
+        </View>
+      )}
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.3)' },
+  promptBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(159,161,158,0.85)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: SPACING.xl,
+  },
+  promptCard: {
+    width: '100%',
+    backgroundColor: COLORS.elementBackground,
+    borderRadius: RADII.md,
+    padding: SPACING.xl,
+    gap: SPACING.md,
+    alignItems: 'flex-start',
+  },
+  sheetBackdrop: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.35)',
+  },
   sheet: {
     backgroundColor: COLORS.elementBackground,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     paddingHorizontal: SPACING.xl,
     paddingTop: SPACING.sm,
-    gap: SPACING.sm,
+    maxHeight: '90%',
   },
   bar: {
     width: 100,
@@ -125,26 +211,27 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     backgroundColor: COLORS.disabledBackground,
     alignSelf: 'center',
-    marginBottom: SPACING.sm,
+    marginBottom: SPACING.md,
   },
   title: {
     fontFamily: 'Poppins_700Bold',
-    fontSize: 24,
+    fontSize: 22,
     color: COLORS.headingText,
   },
   subtitle: {
     fontFamily: 'Poppins_400Regular',
-    fontSize: 15,
+    fontSize: 14,
     color: COLORS.paragraphText,
+    lineHeight: 20,
   },
   starsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: SPACING.sm,
+    width: '100%',
+    paddingVertical: SPACING.xs,
   },
   textArea: {
     minHeight: 120,
-    maxHeight: 188,
     borderWidth: 2,
     borderColor: COLORS.borderPrimary,
     borderRadius: RADII.sm,
@@ -159,6 +246,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: COLORS.paragraphText,
   },
+  photosRow: {
+    flexDirection: 'row',
+    gap: SPACING.sm,
+    marginTop: SPACING.xs,
+    flexWrap: 'wrap',
+  },
   photoSlot: {
     width: 86,
     height: 65,
@@ -166,18 +259,23 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.layer1Background,
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
+    overflow: 'visible',
   },
-  photoImage: { width: '100%', height: '100%' },
+  photoImage: {
+    width: 86,
+    height: 65,
+    borderRadius: RADII.xs,
+  },
   photoRemove: {
     position: 'absolute',
-    top: -6,
-    right: -6,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    top: -8,
+    right: -8,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
     backgroundColor: COLORS.headingText,
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: 1,
   },
 });

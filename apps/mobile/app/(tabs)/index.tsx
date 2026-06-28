@@ -23,6 +23,7 @@ import { getAddresses } from '../../services/address.service';
 import { getCategories } from '../../services/category.service';
 import { search } from '../../services/search.service';
 import { useAddToCart } from '../../utils/useAddToCart';
+import { SideDrawer } from '../../components/SideDrawer';
 
 const MAIN_GRID_SIZE = 8;
 
@@ -30,6 +31,7 @@ export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const addToCart = useAddToCart();
   const [showAllCategories, setShowAllCategories] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const { data: profile } = useQuery({ queryKey: ['profile'], queryFn: getProfile });
   const { data: addresses } = useQuery({ queryKey: ['addresses'], queryFn: getAddresses });
@@ -58,7 +60,7 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
-          <Pressable style={styles.identity} onPress={() => router.push('/profile')}>
+          <Pressable style={styles.identity} onPress={() => setDrawerOpen(true)}>
             <View style={styles.avatar}>
               {profile?.profilePhotoUrl ? (
                 <Image source={{ uri: profile.profilePhotoUrl }} style={styles.avatarImage} contentFit="cover" />
@@ -191,6 +193,12 @@ export default function HomeScreen() {
           </View>
         </View>
       </Modal>
+
+      <SideDrawer
+        visible={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        user={profile ?? null}
+      />
     </View>
   );
 }

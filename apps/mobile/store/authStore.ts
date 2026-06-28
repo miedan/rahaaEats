@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import * as SecureStore from 'expo-secure-store';
+import { useCartStore } from './cartStore';
 
 const ACCESS_TOKEN_KEY = 'rahaa_access_token';
 const REFRESH_TOKEN_KEY = 'rahaa_refresh_token';
@@ -32,11 +33,13 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   setSession: async (user, accessToken, refreshToken) => {
     await setTokens(accessToken, refreshToken);
+    useCartStore.getState().clear();
     set({ user, isAuthenticated: true });
   },
 
   logout: async () => {
     await clearTokens();
+    useCartStore.getState().clear();
     set({ user: null, isAuthenticated: false });
   },
 }));

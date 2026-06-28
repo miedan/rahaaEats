@@ -64,7 +64,7 @@ export default function ExploreScreen() {
         sort: 'rating',
         limit: 20,
       }),
-    enabled: scopedToRestaurant || trimmedQuery.length > 0 || !!category,
+    enabled: (scopedToRestaurant && trimmedQuery.length > 0) || (!scopedToRestaurant && (trimmedQuery.length > 0 || !!category)),
   });
 
   function runSearch(value: string) {
@@ -81,7 +81,7 @@ export default function ExploreScreen() {
     setCategory(undefined);
   }
 
-  const showResults = scopedToRestaurant || trimmedQuery.length > 0 || !!category;
+  const showResults = (scopedToRestaurant && trimmedQuery.length > 0) || (!scopedToRestaurant && (trimmedQuery.length > 0 || !!category));
   const foods = data?.foods ?? [];
   const restaurants = data?.restaurants ?? [];
 
@@ -188,7 +188,21 @@ export default function ExploreScreen() {
         </>
       ) : (
         <View style={styles.recentWrap}>
-          {recent.length === 0 ? (
+          {scopedToRestaurant ? (
+            recent.length === 0 ? (
+              <Text style={styles.emptyText}>Search for food in this restaurant</Text>
+            ) : (
+              <>
+                <Text style={styles.sectionLabel}>Trending</Text>
+                {recent.map((item) => (
+                  <Pressable key={item} style={styles.recentRow} onPress={() => runSearch(item)}>
+                    <Ionicons name="trending-up-outline" size={20} color={COLORS.lightGreyText} />
+                    <Text style={styles.recentText}>{item}</Text>
+                  </Pressable>
+                ))}
+              </>
+            )
+          ) : recent.length === 0 ? (
             <Text style={styles.emptyText}>No recent searches yet</Text>
           ) : (
             recent.map((item) => (
@@ -249,6 +263,13 @@ const styles = StyleSheet.create({
     color: COLORS.paragraphText,
   },
   recentWrap: { paddingHorizontal: SPACING.lg, paddingTop: SPACING.xs },
+  sectionLabel: {
+    fontFamily: 'Poppins_600SemiBold',
+    fontSize: 15,
+    color: COLORS.headingText,
+    marginBottom: SPACING.xxs,
+    paddingHorizontal: SPACING.md,
+  },
   recentRow: {
     flexDirection: 'row',
     alignItems: 'center',

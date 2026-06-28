@@ -79,11 +79,13 @@ export default function ManageAddressesScreen() {
   return (
     <View style={styles.flex}>
       <View style={[styles.header, { paddingTop: insets.top + SPACING.xs }]}>
-        <Pressable onPress={() => router.canGoBack() && router.back()}>
-          <Text style={styles.headerAction}>Back</Text>
+        <Pressable onPress={() => router.canGoBack() && router.back()} hitSlop={8}>
+          <Text style={styles.headerAction}>Cancel</Text>
         </Pressable>
-        <Text style={styles.headerTitle}>Address options</Text>
-        <View style={styles.headerSpacer} />
+        <Text style={styles.headerTitle}>Address</Text>
+        <Pressable hitSlop={8}>
+          <Text style={[styles.headerAction, styles.headerSave]}>Save</Text>
+        </Pressable>
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
@@ -129,9 +131,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.lg,
     paddingBottom: SPACING.sm,
   },
-  headerAction: { fontFamily: 'Poppins_700Bold', fontSize: 15, color: COLORS.paragraphText },
+  headerAction: { fontFamily: 'Poppins_400Regular', fontSize: 15, color: COLORS.paragraphText },
+  headerSave: { fontFamily: 'Poppins_700Bold', color: COLORS.disabledText },
   headerTitle: { fontFamily: 'Poppins_700Bold', fontSize: 17, color: COLORS.headingText },
-  headerSpacer: { width: 40 },
   content: { paddingHorizontal: SPACING.lg, paddingTop: SPACING.lg, gap: SPACING.xl },
   section: { gap: SPACING.md },
   sectionTitle: {
